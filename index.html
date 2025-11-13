@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Airline Route Planner · Floyd–Warshall</title>
+	<meta name="description" content="A beautiful, CSS-only Airline Route Planner UI themed around the Floyd–Warshall algorithm. Tabs, modal, tooltips, animations, and transitions—no JavaScript.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ffffff' d='M30 4l4 0 3 20 21 7-1 4-19-2-6 26-4 0 2-26-17 2-1-4 19-7z'/%3E%3C/svg%3E">
+</head>
+<body>
+	<div class="bg">
+		<div class="bg__blob bg__blob--1"></div>
+		<div class="bg__blob bg__blob--2"></div>
+		<div class="bg__grid"></div>
+	</div>
+
+	<header class="site-header">
+		<nav class="nav container">
+			<a class="brand" href="#top" aria-label="Airline Route Planner Home">
+				<span class="brand__logo" aria-hidden="true">✈</span>
+				<span class="brand__name">Airline Route Planner</span>
+				<span class="brand__algo">Floyd–Warshall</span>
+			</a>
+			<ul class="nav__links">
+				<li><a href="#planner" class="nav__link">Planner</a></li>
+				<li><a href="#visuals" class="nav__link">Visualization</a></li>
+			</ul>
+			<a class="nav__cta" href="#help">Help</a>
+		</nav>
+	</header>
+
+	<main id="top">
+		<section class="hero container">
+			<div class="hero__content card">
+				<h1 class="hero__title">Compute All‑Pairs Shortest Paths</h1>
+				<p class="hero__subtitle">
+					Plan airline routes and review automatically computed shortest paths across your destination network with a responsive, CSS‑only dashboard.
+				</p>
+				<div class="hero__actions">
+					<a href="#planner" class="btn btn--primary">Open Planner</a>
+					<a href="#visuals" class="btn btn--ghost">View Paths</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="planner" class="planner container">
+			<div class="section__head">
+				<h2>Route Planner</h2>
+				<p>Design a network of cities and routes. Use tabs to switch between inputs, matrices, and outputs.</p>
+			</div>
+
+			<!-- CSS-only Tabs -->
+			<div class="tabs card">
+				<input type="radio" name="tab" id="tab-cities" checked>
+				<input type="radio" name="tab" id="tab-routes">
+				<input type="radio" name="tab" id="tab-matrix">
+				<input type="radio" name="tab" id="tab-paths">
+
+				<div class="tabs__labels">
+					<label for="tab-cities" class="tabs__label">Cities</label>
+					<label for="tab-routes" class="tabs__label">Routes</label>
+					<label for="tab-matrix" class="tabs__label">Matrix</label>
+					<label for="tab-paths" class="tabs__label">Paths</label>
+					<span class="tabs__underline" aria-hidden="true"></span>
+				</div>
+
+				<div class="tabs__content">
+					<section class="tab__panel" aria-labelledby="tab-cities">
+						<div class="two-col">
+							<form class="form">
+								<fieldset class="form__group">
+									<legend>Add City</legend>
+									<label class="field">
+										<span>City Name</span>
+										<input type="text" placeholder="e.g., Paris" aria-label="City Name">
+									</label>
+									<label class="field">
+										<span>Code</span>
+										<input type="text" placeholder="e.g., CDG" aria-label="City Code">
+									</label>
+									<button class="btn btn--primary" type="button" aria-disabled="true" title="Demo only">Add</button>
+								</fieldset>
+								<details class="accordion">
+									<summary>City List (Sample)</summary>
+									<ul class="list">
+										<li>New York (JFK)</li>
+										<li>London (LHR)</li>
+										<li>Paris (CDG)</li>
+										<li>Tokyo (HND)</li>
+										<li>Dubai (DXB)</li>
+									</ul>
+								</details>
+							</form>
+							<div class="illustration">
+								<div class="map">
+									<span class="pin" style="--x:18%;--y:42%" data-tooltip="JFK"></span>
+									<span class="pin" style="--x:46%;--y:38%" data-tooltip="LHR"></span>
+									<span class="pin" style="--x:48%;--y:45%" data-tooltip="CDG"></span>
+									<span class="pin" style="--x:82%;--y:48%" data-tooltip="DXB"></span>
+									<span class="pin" style="--x:90%;--y:34%" data-tooltip="HND"></span>
+									<div class="aircraft" aria-hidden="true">✈</div>
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<section class="tab__panel" aria-labelledby="tab-routes">
+						<div class="two-col">
+							<form class="form">
+								<fieldset class="form__group">
+									<legend>Add Route</legend>
+									<label class="field">
+										<span>From</span>
+										<select aria-label="From City">
+											<option>JFK</option><option>LHR</option><option>CDG</option><option>DXB</option><option>HND</option>
+										</select>
+									</label>
+									<label class="field">
+										<span>To</span>
+										<select aria-label="To City">
+											<option>LHR</option><option>CDG</option><option>DXB</option><option>HND</option><option>JFK</option>
+										</select>
+									</label>
+									<label class="field">
+										<span>Distance (km)</span>
+										<input type="number" placeholder="e.g., 5576" aria-label="Distance">
+									</label>
+									<button class="btn btn--primary" type="button" aria-disabled="true" title="Demo only">Add</button>
+								</fieldset>
+								<details class="accordion">
+									<summary>Routes (Sample)</summary>
+									<ul class="list">
+										<li>JFK → LHR: 5540 km</li>
+										<li>LHR → CDG: 344 km</li>
+										<li>CDG → DXB: 5247 km</li>
+										<li>DXB → HND: 7935 km</li>
+										<li>JFK → CDG: 5836 km</li>
+									</ul>
+								</details>
+							</form>
+							<div class="legend card--subtle">
+								<h3>Weights</h3>
+								<p>Edge weights denote distances or costs and power the all‑pairs optimization engine.</p>
+								<ul class="chips">
+									<li class="chip">Directed</li>
+									<li class="chip">Weighted</li>
+									<li class="chip">Dense Graphs</li>
+								</ul>
+							</div>
+						</div>
+					</section>
+
+					<section class="tab__panel" aria-labelledby="tab-matrix">
+						<div class="two-col two-col--stack">
+							<div class="matrix-wrap">
+								<h3>Current Distance Matrix</h3>
+								<div class="matrix">
+									<div class="cell cell--head"></div>
+									<div class="cell cell--head">JFK</div>
+									<div class="cell cell--head">LHR</div>
+									<div class="cell cell--head">CDG</div>
+									<div class="cell cell--head">DXB</div>
+									<div class="cell cell--head">HND</div>
+
+									<div class="cell cell--head">JFK</div>
+									<div class="cell">0</div>
+									<div class="cell">5540</div>
+									<div class="cell">5836</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+
+									<div class="cell cell--head">LHR</div>
+									<div class="cell">∞</div>
+									<div class="cell">0</div>
+									<div class="cell">344</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+
+									<div class="cell cell--head">CDG</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">0</div>
+									<div class="cell">5247</div>
+									<div class="cell">∞</div>
+
+									<div class="cell cell--head">DXB</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">0</div>
+									<div class="cell">7935</div>
+
+									<div class="cell cell--head">HND</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">∞</div>
+									<div class="cell">0</div>
+								</div>
+							</div>
+							<div class="note card--subtle">
+								<h3>Matrix Snapshot</h3>
+								<p>
+									Distances reflect the latest iteration of the network. Update routes to regenerate an optimized distance table for every city pairing.
+								</p>
+								<p class="muted">Sample data shown for illustration.</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="visuals" class="tab__panel" aria-labelledby="tab-paths">
+						<div class="two-col two-col--stack">
+							<div class="paths">
+								<h3>Shortest Paths (Sample)</h3>
+								<table class="table">
+									<thead>
+										<tr><th>From</th><th>To</th><th>Distance</th><th>Path</th></tr>
+									</thead>
+									<tbody>
+										<tr><td>JFK</td><td>CDG</td><td>5540 + 344 = 5884</td><td>JFK → LHR → CDG</td></tr>
+										<tr><td>JFK</td><td>DXB</td><td>11131</td><td>JFK → CDG → DXB</td></tr>
+										<tr><td>LHR</td><td>DXB</td><td>5591</td><td>LHR → CDG → DXB</td></tr>
+										<tr><td>CDG</td><td>HND</td><td>13182</td><td>CDG → DXB → HND</td></tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="callout card--subtle">
+								<h3>Network Summary</h3>
+								<ul class="list list--bullets">
+									<li>Primary hub: JFK (4 outbound connections)</li>
+									<li>Max optimized distance: 13 182 km (CDG → HND)</li>
+									<li>Average optimized leg: 5 632 km</li>
+								</ul>
+								<a class="btn btn--ghost" href="#planner">Update Routes</a>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer container">
+		<p>Floyd–Warshall powered all‑pairs optimization for airline route planning.</p>
+	</footer>
+
+	<!-- CSS-only Modal: Help -->
+	<div id="help" class="modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+		<a href="#" class="modal__overlay" aria-label="Close"></a>
+		<div class="modal__content card">
+			<h2 id="help-title">UI Tips</h2>
+			<ul class="list list--bullets">
+				<li>Use the tabs to navigate between Cities, Routes, Matrix, and Paths.</li>
+				<li>Hover elements to see tooltips; focus with keyboard to see outlines.</li>
+				<li>This is a non‑functional demo—perfect for design review and teaching.</li>
+			</ul>
+			<div class="modal__actions">
+				<a href="#" class="btn btn--primary">Close</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
