@@ -1,4 +1,4 @@
-# Airline Route Planner — Frontend + Flask Backend + Docker
+# Airline Route Planner 
 
 ## What I added
 - A small Flask backend that provides:
@@ -47,3 +47,5 @@ Content-Type: application/json
 ```
 
 Response will include `distances` matrix and `next_hop` for path reconstruction.
+## AUTHOR
+CREATED BY DIVYAPRIYA S
